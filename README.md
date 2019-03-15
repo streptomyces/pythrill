@@ -35,6 +35,15 @@ The argument to `dict()` is a list of tuples.
 ~~~ {.py}
 dict([(k1, v1), (k2,v2)])
 ~~~
+Below also works. Think assignments to keys as arguments.
+~~~ {.py}
+dict(k1 = v1, k2 = v2, k3 = v3)
+~~~
+
+The argument to `set()` is a list.
+~~~ {.py}
+set([1,2,3])
+~~~
 
 
 
