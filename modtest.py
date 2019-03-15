@@ -1,5 +1,5 @@
 import argparse, sys
-sys.path.append("./code/py3lib")
+sys.path.append("./pythrill/py3lib")
 import common as puc
 
 def main():
@@ -11,11 +11,6 @@ def main():
   print(args.infile)
   cla = type(args)
   print(cla)
-
-
-
-
-
 
 
 if __name__ == "__main__":
