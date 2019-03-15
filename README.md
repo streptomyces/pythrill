@@ -31,16 +31,23 @@ There are constructors for the builtin types.
 * `dict()`
 * `set()`
 
+The argument to `dict()` is a list of tuples.
+~~~ {.py}
+dict([(k1, v1), (k2,v2)])
+~~~
+
+
+
 #### Literal syntax
 
-* `int`s are instantiated by context.
-* `float`s are instantiated by context.
-* `complex`s are instantiated by context.
-* `list`s are made using `[1, 2, 3, 4, "five", "six"]`
-* `dict`s are made using `{k1:v1, k2:v2, k3:v3}`
-* `tuple`s are made using `("one", "two", 3, 4)`
-* `set`s are made using `{"one", "two", 3, 4}`
+* `int` instantiated by context.
+* `float` instantiated by context.
+* `complex` instantiated by context.
+* `list` made using `[1, 2, 3, 4, "five", "six"]`
+* `dict` made using `{k1:v1, k2:v2, k3:v3}`
+* `tuple` made using `("one", "two", 3, 4)`
+* `set` made using `{"one", "two", 3, 4}`
 
 Note that empty braces `{}` are literal for an empty dictionary,
-not an empty set. to get an empty set use `set()`.
+not an empty set. To get an empty set use `set()`.
 
