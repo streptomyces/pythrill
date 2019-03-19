@@ -100,6 +100,55 @@ def tabdict(incoming, handle = "stdout"):
     return(False)
 # }}}
 
+# {{{ dissect
+def dissect(x, *header):
+  dirl = dir(x)
+  dord = []
+  for dd in dirl:
+    if not dd.startswith("__"):
+      dord.append(dd)
+  if len(dord) > 0:
+    if len(header) > 0:
+      print("==> " + " ".join(header) + " <==")
+    else:
+      print("==>   <==")
+    print(type(x))
+    for dd1 in dord:
+      estr = "type(" + "x" + "." + dd1 + ")"
+      ty = eval(estr)
+      cas = classAsString(ty);
+      print(dd1 + " => " + cas)
+
+        
+    print("\n")
+# }}} end of dissect()
+
+
+def classAsString(t):
+  x = str(t)
+  y = x.replace("<class '", "")
+  z = y.replace("'>", "")
+  return(z)
+
+
+# {{{ dissect_old
+def dissect_old(x, *header):
+  dirl = dir(x)
+  dord = []
+  for dd in dirl:
+    if not dd.startswith("__"):
+      dord.append(dd)
+  if len(dord) > 0:
+    if len(header) > 0:
+      print("==> " + " ".join(header) + " <==")
+    else:
+      print("==>   <==")
+    print(type(x))
+    print(dord)
+    print("\n")
+# }}} end of dissect_old()
+
+
 # {{{ func pathparse
 def pathparse(incoming):
   tbn=os.path.basename(incoming)
