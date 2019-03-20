@@ -118,8 +118,6 @@ def dissect(x, *header):
       ty = eval(estr)
       cas = classAsString(ty);
       print(dd1 + " => " + cas)
-
-        
     print("\n")
 # }}} end of dissect()
 

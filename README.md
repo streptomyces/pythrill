@@ -20,6 +20,10 @@ interested in syntax checking.
 The `bool` class has only two possible instances `True` and `False`.
 Note the capitalisation.
 
+I am having trouble explicitly passing `False` via `argparse`.
+Any string is interpreted as `True`, even the strings _False_
+and _0_ (zero).
+
 #### Constructors
 
 There are constructors for the builtin types.
@@ -62,3 +66,9 @@ set([1,2,3])
 Note that empty braces `{}` are literal for an empty dictionary,
 not an empty set. To get an empty set use `set()`.
 
+### A module of commonly used functions
+
+In the directory _py3lib/_ there is file named _common.py_. This is
+a collection of functions. They behave like some of those in
+my _Sco::Common_ in Perl. Some may not be appropriate or needed in
+Python, and most can be written better.
