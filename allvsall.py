@@ -62,17 +62,19 @@ print(seq)
 qual = randqual(20)
 print(qual)
 
-sr = SeqRecord(seq, id = "stuff", name = "stuff",
-               letter_annotations = {"qual" : qual}) 
+sr = SeqRecord(seq, id = "stuff", name = "stuff", description = "",
+               letter_annotations = {"phred_quality" : qual}) 
 
 print(type(sr))
 print(sr)
-print(phred33(sr.letter_annotations["qual"]))
+print(phred33(sr.letter_annotations["phred_quality"]))
+
+SeqIO.write([sr], "stuff.fq", "fastq");
 
 '''
 To test run as
 
-python3 allvsall.py
+python3 pythrill/allvsall.py
 
 Note that main() is not being called at this time.  We are only interested in
 generating random sequence and quality strings at this time which we can put in
