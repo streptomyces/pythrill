@@ -52,29 +52,75 @@ def phred33(ql):
   return(retstr)
 # }}}
 
+# {{{ fqcomp. Compare two fq files. Common (on seq AND qual) ones
+# are output as fastq to sys.stdout
+def fqcomp(f1, f2):
+  for r1 in (SeqIO.parse(f1, "fastq")):
+    r1q = r1.letter_annotations["phred_quality"]
+    r1qs = phred33(r1q)
+    for r2 in (SeqIO.parse(f2, "fastq")):
+      r2q = r2.letter_annotations["phred_quality"]
+      r2qs = phred33(r2q)
+      if r1.seq == r2.seq and r1qs == r2qs:
+        SeqIO.write([r1], sys.stdout, "fastq")
+        #print("{}\n{}\n{}".format(r1.id, r1.seq, r1qs))
 
+# }}}
+
+
+# {{{ def twofiles() # hardcoded filenames inside this function.
+def twofiles():
+  onefh = open("one.fq", "wt")
+  twofh = open("two.fq", "wt")
+  
+  srl = []
+  for snum in range(1, 3+1):
+    seq = randnt(100)
+    qual = randqual(100)
+    sname = "{}_{}".format("c", snum);
+    srl.append(SeqRecord(seq, id = sname, name = sname, description = "",
+                         letter_annotations = {"phred_quality" : qual}))
+  
+  SeqIO.write(srl, onefh, "fastq");
+  SeqIO.write(srl, twofh, "fastq");
+  
+  srl = []
+  for snum in range(1, 100+1):
+    seq = randnt(100)
+    qual = randqual(100)
+    sname = "{}_{}".format("one", snum);
+    srl.append(SeqRecord(seq, id = sname, name = sname, description = "",
+                         letter_annotations = {"phred_quality" : qual}))
+  
+  SeqIO.write(srl, onefh, "fastq");
+  
+  
+  srl = []
+  for snum in range(1, 100+1):
+    seq = randnt(100)
+    qual = randqual(100)
+    sname = "{}_{}".format("two", snum);
+    srl.append(SeqRecord(seq, id = sname, name = sname, description = "",
+                         letter_annotations = {"phred_quality" : qual}))
+  
+  SeqIO.write(srl, twofh, "fastq");
+  onefh.close()
+  twofh.close()
+# }}}
 
 # main()
-seq = randnt(20)
-print(type(seq))
-print(seq)
 
-qual = randqual(20)
-print(qual)
+twofiles()
+fqcomp("one.fq", "two.fq")
 
-sr = SeqRecord(seq, id = "stuff", name = "stuff", description = "",
-               letter_annotations = {"phred_quality" : qual}) 
 
-print(type(sr))
-print(sr)
-print(phred33(sr.letter_annotations["phred_quality"]))
 
-SeqIO.write([sr], "stuff.fq", "fastq");
+
 
 '''
 To test run as
 
-python3 pythrill/allvsall.py
+python3 pythrill/allvsall.py one.fq two.fq
 
 Note that main() is not being called at this time.  We are only interested in
 generating random sequence and quality strings at this time which we can put in
