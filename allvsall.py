@@ -14,8 +14,9 @@ def main():
         p1 = "--".join([ifn, ifn1])
         p2 = "--".join([ifn1, ifn])
         if p1 not in donepairs and p2 not in donepairs:
-          donepairs = donepairs + [p1, p2]
-          print(ifn + " vs " + ifn1)
+          donepairs.append(p1)
+          donepairs.append(p2)
+          fqcomp([ifn, ifn1])
   print(donepairs)
 
 # def qualstr(r):
@@ -54,7 +55,9 @@ def phred33(ql):
 
 # {{{ fqcomp. Compare two fq files. Common (on seq AND qual) ones
 # are output as fastq to sys.stdout
-def fqcomp(f1, f2):
+def fqcomp(inlist):
+  f1 = inlist[0]
+  f2 = inlist[1]
   for r1 in (SeqIO.parse(f1, "fastq")):
     r1q = r1.letter_annotations["phred_quality"]
     r1qs = phred33(r1q)
@@ -62,16 +65,23 @@ def fqcomp(f1, f2):
       r2q = r2.letter_annotations["phred_quality"]
       r2qs = phred33(r2q)
       if r1.seq == r2.seq and r1qs == r2qs:
-        SeqIO.write([r1], sys.stdout, "fastq")
+        sq = r1.seq + r1qs
+        if sq in retd:
+          retd[sq].append((f1, r1.id))
+          retd[sq].append((f2, r2.id))
+        else:
+          retd[sq] = [(f1, r1.id), (f2, r2.id)]
+        # SeqIO.write([r1], sys.stdout, "fastq")
         #print("{}\n{}\n{}".format(r1.id, r1.seq, r1qs))
 
 # }}}
 
 
 # {{{ def twofiles() # hardcoded filenames inside this function.
-def twofiles():
-  onefh = open("one.fq", "wt")
-  twofh = open("two.fq", "wt")
+def twofiles(fn):
+  fh = []
+  for f in fn:
+    fh.append(open(f, "wt"))
   
   srl = []
   for snum in range(1, 3+1):
@@ -81,37 +91,45 @@ def twofiles():
     srl.append(SeqRecord(seq, id = sname, name = sname, description = "",
                          letter_annotations = {"phred_quality" : qual}))
   
-  SeqIO.write(srl, onefh, "fastq");
-  SeqIO.write(srl, twofh, "fastq");
+  for ha in fh:
+    SeqIO.write(srl, ha, "fastq");
   
-  srl = []
-  for snum in range(1, 100+1):
-    seq = randnt(100)
-    qual = randqual(100)
-    sname = "{}_{}".format("one", snum);
-    srl.append(SeqRecord(seq, id = sname, name = sname, description = "",
-                         letter_annotations = {"phred_quality" : qual}))
+  for ha in fh:
+    srl = []
+    for snum in range(1, 100+1):
+      seq = randnt(100)
+      qual = randqual(100)
+      sname = "{}_{}".format("one", snum);
+      srl.append(SeqRecord(seq, id = sname, name = sname, description = "",
+                           letter_annotations = {"phred_quality" : qual}))
   
-  SeqIO.write(srl, onefh, "fastq");
+    SeqIO.write(srl, ha, "fastq");
   
-  
-  srl = []
-  for snum in range(1, 100+1):
-    seq = randnt(100)
-    qual = randqual(100)
-    sname = "{}_{}".format("two", snum);
-    srl.append(SeqRecord(seq, id = sname, name = sname, description = "",
-                         letter_annotations = {"phred_quality" : qual}))
-  
-  SeqIO.write(srl, twofh, "fastq");
-  onefh.close()
-  twofh.close()
+  for ha in fh:
+    ha.close()
+
 # }}}
 
 # main()
 
-twofiles()
-fqcomp("one.fq", "two.fq")
+twofiles(sys.argv[1:])
+# fqcomp(sys.argv[1:])
+
+filecol = {}
+cycle = 0
+for f in sys.argv[1:]:
+  cycle += 1
+  filecol[f] = cycle
+print(filecol)
+
+retd = {}
+main()
+for k,v in retd.items():
+  print("{}   {}\n".format(k, v))
+  for t in v:
+    fcol = filecol[t[0]]
+    seqid = t[1]
+    print("{}   {}".format(fcol, seqid))
 
 
 
