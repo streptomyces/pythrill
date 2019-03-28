@@ -60,10 +60,12 @@ def fqcomp(inlist):
   f2 = inlist[1]
   for r1 in (SeqIO.parse(f1, "fastq")):
     r1q = r1.letter_annotations["phred_quality"]
-    r1qs = phred33(r1q)
+    r1qs = r1.format("qual")
+    #r1qs = phred33(r1q)
     for r2 in (SeqIO.parse(f2, "fastq")):
       r2q = r2.letter_annotations["phred_quality"]
-      r2qs = phred33(r2q)
+      r2qs = r2.format("qual")
+      #r2qs = phred33(r2q)
       if r1.seq == r2.seq and r1qs == r2qs:
         sq = r1.seq + r1qs
         if sq in retd:
