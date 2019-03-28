@@ -67,8 +67,10 @@ def fqcomp(inlist):
       if r1.seq == r2.seq and r1qs == r2qs:
         sq = r1.seq + r1qs
         if sq in retd:
-          retd[sq].append((f1, r1.id))
-          retd[sq].append((f2, r2.id))
+          if (f1,r1.id) not in retd[sq]:
+            retd[sq].append((f1, r1.id))
+          if (f2,r2.id) not in retd[sq]:
+            retd[sq].append((f2, r2.id))
         else:
           retd[sq] = [(f1, r1.id), (f2, r2.id)]
         # SeqIO.write([r1], sys.stdout, "fastq")
@@ -82,7 +84,7 @@ def twofiles(fn):
   fh = []
   for f in fn:
     fh.append(open(f, "wt"))
-  
+
   srl = []
   for snum in range(1, 3+1):
     seq = randnt(100)
@@ -90,10 +92,10 @@ def twofiles(fn):
     sname = "{}_{}".format("c", snum);
     srl.append(SeqRecord(seq, id = sname, name = sname, description = "",
                          letter_annotations = {"phred_quality" : qual}))
-  
+
   for ha in fh:
     SeqIO.write(srl, ha, "fastq");
-  
+
   for ha in fh:
     srl = []
     for snum in range(1, 100+1):
@@ -102,9 +104,9 @@ def twofiles(fn):
       sname = "{}_{}".format("one", snum);
       srl.append(SeqRecord(seq, id = sname, name = sname, description = "",
                            letter_annotations = {"phred_quality" : qual}))
-  
+
     SeqIO.write(srl, ha, "fastq");
-  
+
   for ha in fh:
     ha.close()
 
@@ -112,25 +114,30 @@ def twofiles(fn):
 
 # main()
 
-twofiles(sys.argv[1:])
+#twofiles(sys.argv[1:])
 # fqcomp(sys.argv[1:])
 
 filecol = {}
 cycle = 0
 for f in sys.argv[1:]:
-  cycle += 1
   filecol[f] = cycle
-print(filecol)
+  cycle += 1
+#print(filecol)
 
 retd = {}
 main()
+print("\t".join(sys.argv[1:]))
 for k,v in retd.items():
-  print("{}   {}\n".format(k, v))
+  #print("{}   {}\n".format(k, v))
+  outlist=[]
+  for i in sys.argv[1:]:
+    outlist.append("-")
   for t in v:
     fcol = filecol[t[0]]
     seqid = t[1]
-    print("{}   {}".format(fcol, seqid))
-
+    outlist[fcol] =seqid
+    #print("{}   {}".format(t[0], seqid))
+  print("\t".join(outlist))
 
 
 
@@ -152,5 +159,3 @@ happening. Once you have done this figure out how to write the sequence to a
 fastq file.
 
 '''
-
-
