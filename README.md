@@ -72,3 +72,6 @@ In the directory _py3lib/_ there is file named _common.py_. This is
 a collection of functions. They behave like some of those in
 my _Sco::Common_ in Perl. Some may not be appropriate or needed in
 Python, and most can be written better.
+
+
+
