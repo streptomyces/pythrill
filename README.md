@@ -1,4 +1,4 @@
-# Conceptual code for Python 3
+# Python 3 bare essentials
 
 When you clone this repository a directory named `pythrill` will
 be created. The instructions and commands below assume that your
@@ -65,6 +65,13 @@ set([1,2,3])
 
 Note that empty braces `{}` are literal for an empty dictionary,
 not an empty set. To get an empty set use `set()`.
+
+#### Formatted output
+
+The function `print()` is rather crude and useless.
+
+
+
 
 ### A module of commonly used functions
 
