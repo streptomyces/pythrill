@@ -28,7 +28,10 @@
 # !*.pod
 # !*.[rR]
 
+*/
 *.pyc
 test_*
 .*sw[op]
+__pycache__
+!py3lib/
 

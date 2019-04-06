@@ -1,4 +1,3 @@
-# dupFinder.py
 import os, sys, stat, time
 import hashlib
 
@@ -77,6 +76,7 @@ def printaccessInfo(dict1):
     else:
         print("I am alone")
 """
+
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         dups = {}
@@ -88,7 +88,13 @@ if __name__ == '__main__':
                 joinDicts(dups, findDup(i))
             else:
                 print('%s is not a valid path, please verify' % i)
-                sys.exit()
+                continue
+                #sys.exit()
         printResults(dups)
     else:
-        print('Usage: python dupFinder.py folder or python dupFinder.py folder1 folder2 folder3')
+        print('Usage:\npython3 '
+              +  sys.argv[0] + 
+              ' folder\nor\npython3 '
+              + sys.argv[0] +
+              ' folder1 folder2 folder3')
+
