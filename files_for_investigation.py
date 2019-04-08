@@ -1,14 +1,27 @@
-import os, sys, stat, time
+import os, sys, stat, time,re
 import hashlib
 
 def findDup(parentFolder):
     # Dups in format {hash:[names]}
     dups = {}
     for dirName, subdirs, fileList in os.walk(parentFolder):
-        print('Scanning %s...' % dirName)
+        print(str(len(fileList)) + "\t" +  dirName)
+        dotstart = (os.path.basename(os.path.normpath(dirName)))
+        #if dirName.startswith('.'): #ignore dirnames with dotstart
+            #continue
+        #print('Scanning %s...' % dirName)
         for filename in fileList:
             # Get the path to the file
             path = os.path.join(dirName, filename)
+            if os.path.islink(path) : #or path.startswith('.'): #irnore sym links and files starting with dot
+                continue
+            curtime = time.time()
+            accessTimesinceEpoc = os.path.getmtime(path)
+            difftime = curtime - accessTimesinceEpoc
+            daysMod = difftime/(60*60*24)
+            filesizeInBytes = os.path.getsize(path)
+            print (path + "\t" + str(accessTimesinceEpoc) + "\t" + str(curtime) + "\t" + str(difftime)
+            + "\t" + str(daysMod) + "\t" + str(filesizeInBytes))
             # Calculate hash
             file_hash = hashfile(path)
             # Add or append the file path
@@ -53,29 +66,13 @@ def printResults(dict1):
                 accessTimesinceEpoc = os.path.getatime(subresult)
                 accessTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(accessTimesinceEpoc))
                 filesizeInBytes = os.path.getsize(subresult)
-                print('%s' % subresult + "\t" + accessTime + "\t" + str(filesizeInBytes))
+                #print('%s' % subresult + "\t" + accessTime + "\t" + str(filesizeInBytes))
                 #print('%s' % subresult + "\t" + str(total_dir_size))
             print('___________________')
 
     else:
         print('No duplicate files found.')
 
-"""
-def printaccessInfo(dict1):
-    results = list(filter(lambda x: len(x) > 1, dict1.values()))
-
-    if len(results) > 0:
-        print('Last Access Info:')
-
-        for result in results:
-            for subresult in result:
-
-                accessTimesinceEpoc = os.path.getatime(subresult)
-                accessTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(accessTimesinceEpoc))
-                print("File Last Access Time : " + subresult+"\t" + accessTime)
-    else:
-        print("I am alone")
-"""
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
@@ -93,8 +90,7 @@ if __name__ == '__main__':
         printResults(dups)
     else:
         print('Usage:\npython3 '
-              +  sys.argv[0] + 
+              +  sys.argv[0] +
               ' folder\nor\npython3 '
               + sys.argv[0] +
               ' folder1 folder2 folder3')
-
