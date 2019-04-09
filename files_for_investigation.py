@@ -1,5 +1,6 @@
 import os, sys, stat, time,re
 import hashlib
+import magicfile as magic
 
 def findDup(parentFolder):
     # Dups in format {hash:[names]}
@@ -20,8 +21,10 @@ def findDup(parentFolder):
             difftime = curtime - accessTimesinceEpoc
             daysMod = difftime/(60*60*24)
             filesizeInBytes = os.path.getsize(path)
+            f = magic.Magic(mime=True, uncompress=True) #Only look for uncompressed files
+            file_status = f.from_file(path)
             print (path + "\t" + str(accessTimesinceEpoc) + "\t" + str(curtime) + "\t" + str(difftime)
-            + "\t" + str(daysMod) + "\t" + str(filesizeInBytes))
+            + "\t" + str(daysMod) + "\t" + str(filesizeInBytes) + "\t" + file_status)
             # Calculate hash
             file_hash = hashfile(path)
             # Add or append the file path
