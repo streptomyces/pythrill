@@ -2,55 +2,39 @@ import os, sys, stat, time,re
 import hashlib
 # import magicfile as magic
 
-# {{{ def hasher(indir, fncnt) my replacement for findDup
+# {{{ def hasher(indir, fncnt). Cleaned up version of findDup().
+# Argument 1 is directory to walk into
+# Argument 2 in an empty dictionary in which keys will be
+# directory names and values will be the number of files in
+# them.
+# Called as hasher(<path> <dictionary>)
+# Return a dictionary in which keys are hashes and values
+# are lists of file names
 def hasher(indir, fncnt):
     hashd = {}
     for thisdir, sudirs, bns in os.walk(indir):
+        dirbn = os.path.basename(thisdir)
+        rem = re.match(r'^\.', dirbn)
+        if rem:
+            continue
         fncnt[thisdir] = len(bns)
         for bn in bns:
             fn = os.path.join(thisdir, bn)
-            # if os.path.islink(fn):
-            #     continue
+            if os.path.islink(fn):
+                continue
+# Below does not work as expected. I think I know why
+# but need time to fix. Basically, need to remove indir
+# from the beginning of fn and then searching that with
+# the RE below.
+            #rem = re.search(r'\.[0-9A-Za-z]', fn)
+            #if rem:
+            #    continue
             fnhash = hashfile(fn)
             if fnhash in hashd:
                 hashd[fnhash].append(fn)
             else:
                 hashd[fnhash] = [fn]
     return(hashd)
-# }}}
-
-# {{{ def findDup(parentFolder):
-def findDup(parentFolder):
-    # Dups in format {hash:[names]}
-    dups = {}
-    for dirName, subdirs, fileList in os.walk(parentFolder):
-        print(str(len(fileList)) + "\t" +  dirName)
-        dotstart = (os.path.basename(os.path.normpath(dirName)))
-        #if dirName.startswith('.'): #ignore dirnames with dotstart
-            #continue
-        #print('Scanning %s...' % dirName)
-        for filename in fileList:
-            # Get the path to the file
-            path = os.path.join(dirName, filename)
-            if os.path.islink(path) : #or path.startswith('.'): #irnore sym links and files starting with dot
-                continue
-            curtime = time.time()
-            accessTimesinceEpoc = os.path.getmtime(path)
-            difftime = curtime - accessTimesinceEpoc
-            daysMod = difftime/(60*60*24)
-            filesizeInBytes = os.path.getsize(path)
-            f = magic.Magic(mime=True, uncompress=True) #Only look for uncompressed files
-            file_status = f.from_file(path)
-            print (path + "\t" + str(accessTimesinceEpoc) + "\t" + str(curtime) + "\t" + str(difftime)
-            + "\t" + str(daysMod) + "\t" + str(filesizeInBytes) + "\t" + file_status)
-            # Calculate hash
-            file_hash = hashfile(path)
-            # Add or append the file path
-            if file_hash in dups:
-                dups[file_hash].append(path)
-            else:
-                dups[file_hash] = [path]
-    return dups
 # }}}
 
 # {{{ def daysMod(fn):
@@ -107,9 +91,16 @@ def hashfile(path, blocksize = 65536):
 # }}}
 
 nfn = {}
-hashd = hasher("data", nfn)
+hashd = hasher(sys.argv[1], nfn)
 
+# hashd has hashes as keys and lists of files as values. These
+# lists will have at least one member.
 
+# Below we make a dictionary called copies in which the first
+# filenames of the lists in hashd are keys and values are the 
+# rest of the filenames separated by commas. These values are
+# lists containing just one string. If there is no copy for a filename
+# then the list contains "-".
 copies = {};
 for k in hashd:
     if len(hashd[k]) > 1:
@@ -117,10 +108,9 @@ for k in hashd:
     else:
         copies[hashd[k][0]] = ["-"]
 
-# for k in copies:
-#     print("{}, {}\n".format(k, copies[k]))
 
-
+# Now we add some information about the files to the lists
+# which are the values of the copies dictionary.
 for prifn in copies:
     modified = int(daysMod(prifn))
     accessed = int(daysAcc(prifn))
@@ -129,11 +119,18 @@ for prifn in copies:
     copies[prifn].append(os.path.getsize(prifn))
 
 
+print("#{}\t{}\t{}\t{}\t{}".format("File", "Copies", "AccDays",
+                                         "ModDays", "Bytes"))
+
+
 for k in copies:
     l = copies[k]
     print("{}\t{}\t{:d}\t{:d}\t{:d}".format(k, l[0], l[1], l[2], l[3]))
 
-print("{}".format("==================================="));
+
+print()
+# print("{}".format("### Number of files in directories ###"))
+print("#{}\t{}".format("Directory", "NumFiles"))
 for k in nfn:
     print("{}/\t{}".format(k, nfn[k]))
 
