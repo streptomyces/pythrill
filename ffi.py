@@ -1,6 +1,6 @@
 import os, sys, stat, time,re
 import hashlib
-# import magicfile as magic
+import magicfile as magic
 
 # {{{ def hasher(indir, fncnt). Cleaned up version of findDup().
 # Argument 1 is directory to walk into
@@ -55,6 +55,14 @@ def daysAcc(fn):
     return(ndays)
 # }}}
 
+def compStatus(fn):
+    f = magic.Magic(uncompress=True) #Only look for uncompressed files
+    file_status = f.from_file(fn)
+    if re.search("compressed", file_status):
+        return True
+    else:
+        return False
+
 # {{{ def hashfile(path, blocksize = 65536):
 def hashfile(path, blocksize = 65536):
     afile = open(path, 'rb')
@@ -97,7 +105,7 @@ hashd = hasher(sys.argv[1], nfn)
 # lists will have at least one member.
 
 # Below we make a dictionary called copies in which the first
-# filenames of the lists in hashd are keys and values are the 
+# filenames of the lists in hashd are keys and values are the
 # rest of the filenames separated by commas. These values are
 # lists containing just one string. If there is no copy for a filename
 # then the list contains "-".
@@ -114,18 +122,19 @@ for k in hashd:
 for prifn in copies:
     modified = int(daysMod(prifn))
     accessed = int(daysAcc(prifn))
+    cstatus = int(compStatus(prifn))
     copies[prifn].append(accessed)
     copies[prifn].append(modified)
     copies[prifn].append(os.path.getsize(prifn))
+    copies[prifn].append(cstatus)
 
-
-print("#{}\t{}\t{}\t{}\t{}".format("File", "Copies", "AccDays",
-                                         "ModDays", "Bytes"))
+print("#{}\t{}\t{}\t{}\t{}\t{}".format("File", "Copies", "AccDays",
+                                         "ModDays", "Bytes", "Compressed"))
 
 
 for k in copies:
     l = copies[k]
-    print("{}\t{}\t{:d}\t{:d}\t{:d}".format(k, l[0], l[1], l[2], l[3]))
+    print("{}\t{}\t{:d}\t{:d}\t{:d}\t{:d}".format(k, l[0], l[1], l[2], l[3],l[4]))
 
 
 print()
@@ -139,9 +148,3 @@ for k in nfn:
 '''
 python3 pythrill/ffi.py
 '''
-
-
-
-
-
-
