@@ -22,7 +22,7 @@ if __name__ == '__main__':
    parser = argparse.ArgumentParser()
    parser.add_argument('--dirname',     help='Please enter directory name ')
    parser.add_argument('--days',        help='Number of days last accessed ')
-   parser.add_argument('--size',        help='File size in Kilobytes ')
+   parser.add_argument('--size',        help='File size in bytes ')
    parser.add_argument('--filelimit',   help='specify number of files above which a directory is bigDir')
 
    args = parser.parse_args()
