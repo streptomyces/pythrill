@@ -1,6 +1,5 @@
 
 import os
-from collections import defaultdict
 
 def bigdir_check(folder, size_limitKB = 1024):
 
