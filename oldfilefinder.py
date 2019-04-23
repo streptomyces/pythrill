@@ -1,6 +1,5 @@
 import os
 import datetime
-from collections import defaultdict
 
 
 def access_check(folder, time_limit_days ):
@@ -12,7 +11,6 @@ def access_check(folder, time_limit_days ):
        for filer in files:
 
             full_file_path = os.path.join(os.path.abspath(path), filer) # full path to file
-            this_file_age  = os.path.getsize(full_file_path)            #  size in bytes
 
             atime     = datetime.datetime.fromtimestamp(os.stat(full_file_path).st_atime)  # access time
             time_limit_days_unit = datetime.timedelta(days = time_limit_days)
