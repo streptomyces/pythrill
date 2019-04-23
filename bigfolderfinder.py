@@ -9,7 +9,9 @@ def detect_folder_with_number_files(mydir ='data/', files_allowed = 3 ):
    bigfolders = {} #defaultdict(int)
    for path, dirs, files in os.walk(mydir):
        dirname = os.path.abspath(path)
-       bigfolders[dirname] =  len(files)
+       numFiles = len(files)
+       if numFiles > files_allowed:
+           bigfolders[dirname] =  len(files)
    return bigfolders
 
 
